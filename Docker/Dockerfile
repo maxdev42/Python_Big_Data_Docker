@@ -1,15 +1,25 @@
-FROM python:3
+FROM ubuntu:18.04
 
-WORKDIR /usr/src/app
+RUN apt-get update && \
+    apt-get -y install curl && \
+    apt-get install -qy python3 && \
+    apt-get install -qy python3-pip && \
+    apt-get install -qy vim && \
+    apt-get install -y git
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt \
-    apt-get install vim \
-    apt-get install pip3 \
-    apt get update
+RUN apt-get -y install git
+
+RUN git clone https://github.com/maxdev42/python-big-data.git
+
+WORKDIR /Docker
+ADD . /workspace
+WORKDIR /workspace
+
+RUN pip3 freeze > requirements.txt && \
+    pip3 install -r requirements.txt && \
+    pip3 install jupyter
 
 EXPOSE 8000
 
-COPY . .
 
-CMD [ "python", "./your-daemon-or-script.py" ]
+CMD workspace --port 8000
